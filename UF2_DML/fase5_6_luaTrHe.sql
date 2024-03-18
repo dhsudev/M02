@@ -1,3 +1,4 @@
+-- Active: 1708085372039@@127.0.0.1@3306@fase3
 /* *****************************************************
 //  INSTITUT TIC DE BARCELONA
 //	CFGS: DAM 1A
@@ -54,3 +55,20 @@ WHERE eq.Conferencia = 'West'
 GROUP BY e.codigo
 HAVING TEMPORADES > 10 and MIN_PPP > 10
 ORDER BY TEMPORADES DESC, PROMIG_PPP;
+
+
+SELECT codigo as CODI, ROUND(AVG(`Puntos_por_partido`),2) as PUNTS_PROMIG
+FROM `Estadisticas`
+where codigo = ANY(select codigo from `Jugador` where `Procedencia` like ('Spain'))
+GROUP BY codigo;
+
+SELECT e.codigo as CODIGO, j.`Nombre` as NOMBRE, j.`Nombre_equipo` as EQUIPO, e.temporada as TEMPORADA, `Puntos_por_partido` as PPP
+from `Estadisticas` as e natural join `Jugador` as j
+where e.`Puntos_por_partido` >= (
+	select MAX(`Puntos_por_partido`)
+	from `Estadisticas` 
+	where codigo = ANY(
+			select codigo 
+			from `Jugador` 
+			where `Nombre_equipo` like('Lakers')))	
+	and j.`Nombre_equipo`<>'Lakers';
